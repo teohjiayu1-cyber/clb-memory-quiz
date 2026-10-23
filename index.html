@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6f1">
+  <meta name="description" content="A-Level 华文B词语与阅读理解四选一记忆游戏。">
+  <title>华文B · 词语记忆挑战</title>
+  <style>
+    :root { font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif; color:#182b30; background:#f7f6f1; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; }
+    .wrap { width:min(760px, calc(100% - 32px)); margin:0 auto; padding:38px 0 68px; }
+    header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:38px; }
+    .brand { font-weight:800; letter-spacing:.04em; color:#174f4a; }
+    .tag { color:#5e716f; font-size:13px; border:1px solid #d7e0dc; border-radius:999px; padding:7px 12px; }
+    .intro { margin:0 0 25px; }
+    h1 { font-size:clamp(30px,6vw,46px); letter-spacing:-.045em; line-height:1.22; margin:0 0 12px; }
+    .subtitle { color:#596c69; font-size:15px; line-height:1.8; margin:0; }
+    .panel { background:white; border:1px solid #e0e5df; border-radius:22px; box-shadow:0 16px 45px rgba(32,58,52,.06); padding:clamp(22px,5vw,38px); }
+    .topline { display:flex; align-items:center; justify-content:space-between; color:#61736e; font-size:13px; font-weight:650; gap:8px; }
+    .pill { background:#e8f4ef; color:#24685b; padding:7px 11px; border-radius:999px; }
+    .bar { height:7px; border-radius:99px; background:#eef1eb; margin:17px 0 32px; overflow:hidden; }
+    .bar > span { display:block; height:100%; background:#24806d; width:0; transition:width .3s; }
+    .context { background:#f7f8f4; border-left:3px solid #80b1a3; padding:16px 18px; border-radius:0 12px 12px 0; font-size:17px; line-height:1.85; white-space:pre-line; margin:0 0 12px; }
+    .source { font-size:12px; color:#75847f; margin:0 0 24px; }
+    h2 { font-size:22px; line-height:1.5; letter-spacing:-.02em; margin:0 0 20px; }
+    .choices { display:grid; gap:11px; }
+    button { font:inherit; cursor:pointer; }
+    .choice { width:100%; text-align:left; display:flex; gap:15px; align-items:center; padding:14px 16px; min-height:61px; background:#fff; color:#1c3232; border:1.5px solid #dfe7e2; border-radius:12px; transition:background .18s,border-color .18s,transform .18s; font-size:17px; }
+    .choice:hover:not(:disabled) { border-color:#3b8d79; background:#f7fbf8; transform:translateY(-1px); }
+    .choice:focus-visible, .primary:focus-visible { outline:3px solid #99c5b5; outline-offset:3px; }
+    .choice:disabled { cursor:default; }
+    .letter { display:grid; place-items:center; flex:0 0 28px; height:28px; background:#f2f5f0; border-radius:8px; color:#55726b; font-size:13px; font-weight:800; }
+    .choice.correct { border-color:#2c8a6b; background:#ebf7f0; }
+    .choice.wrong { border-color:#c66d67; background:#fff1ed; }
+    .choice.correct .letter { background:#2c8a6b; color:#fff; }
+    .choice.wrong .letter { background:#c66d67; color:#fff; }
+    .feedback { margin-top:23px; padding:18px 20px; background:#f3f8f3; border-radius:13px; border:1px solid #dce9df; line-height:1.65; }
+    .feedback.bad { background:#fff8f2; border-color:#f2e3d5; }
+    .feedback strong { display:block; color:#245e50; margin-bottom:5px; }
+    .feedback.bad strong { color:#9d5548; }
+    .feedback p { margin:0; color:#455b57; font-size:14px; }
+    .actions { display:flex; justify-content:flex-end; margin-top:18px; }
+    .primary { border:0; border-radius:11px; background:#176b5d; color:white; padding:12px 23px; font-weight:750; min-height:45px; }
+    .primary:hover { background:#105748; }
+    .end { text-align:center; padding:36px 12px; }
+    .end .big { font-size:58px; font-weight:800; color:#176b5d; margin:9px 0; }
+    .end p { color:#61736e; line-height:1.7; }
+    footer { text-align:center; margin-top:23px; color:#8b9892; font-size:12px; line-height:1.6; }
+    @media (max-width:560px) { .wrap { padding-top:22px; } header { margin-bottom:28px; } .tag { display:none; } .context { font-size:16px; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header><div class="brand">华文B / CLB</div><div class="tag">A-Level 8611 · 试卷二</div></header>
+    <div class="intro"><h1>词语记忆挑战</h1><p class="subtitle">每道情境题之后，马上回忆刚出现的词语。选择答案后，阅读简短的英文解释。</p></div>
+    <section id="game" class="panel" aria-live="polite"></section>
+    <footer>依据所上传的 2021–2024 年华文B试卷二材料改编；阅读题与记忆题为练习题。</footer>
+  </main>
+  <script src="extra.js"></script>
+  <script>
+    // Each pair has a source-based context question and an immediate retrieval question.
+    const pairs = [
+      { source:'2024 · 年终试卷', kind:'词语应用', passage:'慧婷：我们要找四周没有高楼的地方，这样我们的视线才不会被____。', ask:'哪一个词语最适合填入空格？', choices:['控制','阻挡','避免','消除'], answer:1, explain:'B blocks the view. A controls; C avoids; D eliminates.', term:'阻挡', memory:['Help pass through','Block a path or view','Observe carefully','Change direction'], memoryAnswer:1, memoryExplain:'B means to block. A helps passage; C observes; D changes direction.' },
+      { source:'2021 · 年中试卷', kind:'词语应用', passage:'自然连道的两旁都栽种了许多精心挑选的树木，以____不同的动物来到这里。', ask:'哪一个词语最适合填入空格？', choices:['收集','召集','吸收','吸引'], answer:3, explain:'D attracts animals. A collects; B summons people; C absorbs.', term:'吸引', memory:['Attract someone or something','Return an item','Separate things','Lower the volume'], memoryAnswer:0, memoryExplain:'A means to attract. B returns; C separates; D lowers sound.' },
+      { source:'2022 · 年中试卷', kind:'词语应用', passage:'三巴旺温泉公园一片绿意，是一个适合国人____身心的好地方。', ask:'哪一个词语最适合填入空格？', choices:['改善','放松','照顾','练习'], answer:1, explain:'B relaxes body and mind. A improves; C cares for; D practises.', term:'放松', memory:['Ease tension','Practise repeatedly','Increase gradually','Manage strictly'], memoryAnswer:0, memoryExplain:'A means to relax. B trains; C increases; D manages strictly.' },
+      { source:'2023 · 年中试卷', kind:'词语应用', passage:'这些家庭可以根据自己的需要，到与食物银行____的餐厅用餐。', ask:'哪一个词语最适合填入空格？', choices:['帮助','合作','搭配','接受'], answer:1, explain:'B means collaborate with the food bank. A helps; C pairs; D accepts.', term:'合作', memory:['Work together','Refuse an invitation','Act alone','Quarrel with each other'], memoryAnswer:0, memoryExplain:'A means working together. B refuses; C acts alone; D quarrels.' },
+      { source:'2023 · 年终试卷', kind:'词语应用', passage:'买一本书，到咖啡座一边喝茶一边看书，再仔细____艺术画作。', ask:'哪一个词语最适合填入空格？', choices:['观察','陶醉','欣赏','体会'], answer:2, explain:'C appreciates artwork. A observes; B feels enchanted; D experiences or understands.', term:'欣赏', memory:['Appreciate something beautiful','Worry about the future','Return an item','Finish work quickly'], memoryAnswer:0, memoryExplain:'A means to appreciate. B worries; C returns; D finishes quickly.' },
+      { source:'2022 · 年终试卷', kind:'阅读理解', passage:'夜晚的滨海湾花园五光十色。各式各样的本地特色美食，加上小贩们的生活小故事，都能让游客更了解本地的民俗文化。', ask:'游客探索小贩中心，可以更了解什么？', choices:['新加坡的民俗文化','花园的灯光技术','酒店的建筑方法','国外的购物习惯'], answer:0, explain:'A is stated in the passage. B concerns lights; C architecture; D overseas shopping.', term:'五光十色', memory:['Colourful and varied','Very quiet','Only one colour','Very fast'], memoryAnswer:0, memoryExplain:'A means colourful and varied. B is quiet; C one colour; D very fast.' },
+      { source:'2021 · 年终试卷', kind:'阅读理解', passage:'“食物银行”收集还没过期的剩余食物，再捐给有需要的人。创办人认为，让人们更懂得珍惜食物，才能真正解决浪费的问题。', ask:'创办人认为，怎样才能真正减少食物浪费？', choices:['购买更多食物','只增加捐赠数量','学会珍惜食物','停止所有宣传活动'], answer:2, explain:'C values food, addressing waste. A buys more; B increases donations only; D stops outreach.', term:'珍惜', memory:['Treasure and value','Discard carelessly','Sort carefully','Buy in bulk'], memoryAnswer:0, memoryExplain:'A means to treasure. B discards; C sorts; D buys in bulk.' },
+      { source:'2024 · 年终试卷', kind:'阅读理解', passage:'“爱咪”动物义工组织照顾流浪猫的费用很高。他们售卖罐头猫食，用盈利补贴这些费用。', ask:'义工组织为什么售卖罐头猫食？', choices:['训练流浪猫','支付部分照顾费用','开设新餐馆','减少猫食的种类'], answer:1, explain:'B helps pay care costs. A trains cats; C opens restaurants; D reduces varieties.', term:'补贴', memory:['Subsidise expenses','Cancel all expenses','Borrow money','Sort items'], memoryAnswer:0, memoryExplain:'A means to subsidise costs. B cancels; C borrows; D sorts.' },
+      { source:'2022 · 年中试卷', kind:'阅读理解', passage:'超市每个月会遗失大约五十个购物篮，有的可能被顾客带回家。负责人呼吁公众若看到购物篮，可以归还给任何一间超市。', ask:'负责人希望公众看到超市购物篮时怎么做？', choices:['带回家使用','丢进回收箱','归还给超市','转卖给别人'], answer:2, explain:'C returns baskets. A takes them home; B discards; D resells.', term:'归还', memory:['Return something taken or borrowed','Sell an item','Keep permanently','Throw away'], memoryAnswer:0, memoryExplain:'A means to return something. B sells; C keeps; D discards.' },
+      { source:'2023 · 年终试卷', kind:'阅读理解', passage:'有些人给野生动物喂食，以为这么做是为了动物好。其实，喂食会导致它们失去寻找食物的本能，也会污染环境。', ask:'为什么不应该随意喂食野生动物？', choices:['动物会学会寻找食物','动物可能失去觅食本能','所有动物都会离开公园','野生动物只吃一种食物'], answer:1, explain:'B loses foraging instinct. A learns to forage; C leaves the park; D eats one food.', term:'本能', memory:['Inborn ability or behaviour','Knowledge learned in class','Temporary interest','Rules imposed by others'], memoryAnswer:0, memoryExplain:'A means instinct. B is learned knowledge; C temporary interest; D imposed rules.' }
+    ];
+    pairs.push(...extraPairs);
+    const pinyin = [
+      'zǔ dǎng','xī yǐn','fàng sōng','hé zuò','xīn shǎng','wǔ guāng shí sè','zhēn xī','bǔ tiē','guī huán','běn néng',
+      'hūn àn','kùn nán','zì rán ér rán','liáo tiān','jiū jìng','gōng néng','fēn pèi','jiē chù','zēng jiā','qīng lǐ',
+      'wū rǎn','cán kuì','kāi shè','bù zhī suǒ cuò','tí gōng','zhī chí','mù dì','zhù yì','lián luò','zhǔn bèi',
+      'gǎn dòng','yí shī','jiàn yì','bǎo chí','wén míng yú shì','gōu tōng','xiàn xiàng','yǔ zhòng bù tóng','gǔ lì','dǎo zhì',
+      'fú chí','kè chéng','xuǎn xiū','yán shēn','fēn lèi','líng huó','nuǎn xīn','xùn liàn','yuǎn chéng','bīn lín jué zhǒng'
+    ];
+    const questions = pairs.flatMap((p,i) => [
+      { ...p, explain:p.term+' ('+pinyin[i]+') — '+p.explain, number:i*2+1, memoryMode:false },
+      { source:p.source, kind:'Recall', passage:'Think back to the previous question.', ask:'What is the meaning of “'+p.term+'”?', choices:p.memory, answer:p.memoryAnswer, explain:p.term+' ('+pinyin[i]+') — '+p.memoryExplain, number:i*2+2, memoryMode:true }
+    ]);
+    let current=0, score=0, chosen=null;
+    const game=document.getElementById('game');
+    function el(tag, cls, content) { const node=document.createElement(tag); if(cls) node.className=cls; if(content!==undefined) node.textContent=content; return node; }
+    function render() {
+      game.replaceChildren();
+      if(current>=questions.length) {
+        const end=el('div','end'); end.append(el('div','pill','完成挑战'),el('h2','', '做得好！'),el('div','big',score+' / '+questions.length),el('p','', '你完成了五十组情境题和即时记忆题。可以再玩一次，巩固词语。'));
+        const retry=el('button','primary','再玩一次'); retry.onclick=()=>{current=0;score=0;chosen=null;render();};end.append(retry);game.append(end);return;
+      }
+      const q=questions[current];game.lang=q.memoryMode?'en':'zh-Hans';
+      const top=el('div','topline');top.append(el('span','pill',q.kind),el('span','',q.memoryMode?`Question ${q.number} / ${questions.length} · ${score} correct`:`第 ${q.number} / ${questions.length} 题 · 已答对 ${score} 题`));game.append(top);
+      const bar=el('div','bar');const fill=el('span');fill.style.width=((current+1)/questions.length*100)+'%';bar.append(fill);game.append(bar);
+      const sourceEnglish=q.source.replace('年中试卷','Mid-Year Paper').replace('年终试卷','End-Year Paper');
+      game.append(el('div','context',q.passage),el('p','source',q.memoryMode?'From the previous question · '+sourceEnglish:'材料来源：'+q.source),el('h2','',q.ask));
+      const list=el('div','choices');
+      q.choices.forEach((option,i)=>{
+        const btn=el('button','choice');btn.type='button';btn.setAttribute('aria-label',`${'ABCD'[i]}，${option}`);btn.append(el('span','letter','ABCD'[i]),el('span','',option));
+        if(chosen!==null) { btn.disabled=true; if(i===q.answer)btn.classList.add('correct');else if(i===chosen)btn.classList.add('wrong'); }
+        btn.onclick=()=>{ if(chosen!==null)return;chosen=i;if(i===q.answer)score++;render(); };list.append(btn);
+      });game.append(list);
+      if(chosen!==null) {
+        const feedback=el('div','feedback'+(chosen===q.answer?'':' bad'));
+        const label=q.memoryMode?(chosen===q.answer?'Correct!':'The correct answer is '+ 'ABCD'[q.answer]+'.'):(chosen===q.answer?'答对了！':'再记住这个词：正确答案是 '+ 'ABCD'[q.answer]+'。');
+        feedback.append(el('strong','',label),el('p','',q.explain));game.append(feedback);
+        const actions=el('div','actions');const next=el('button','primary',q.memoryMode?(current===questions.length-1?'See results':'Next question →'):(current===questions.length-1?'查看成绩':'下一题 →'));next.onclick=()=>{current++;chosen=null;render();window.scrollTo({top:0,behavior:'smooth'});};actions.append(next);game.append(actions);
+      }
+    }
+    document.addEventListener('keydown',e=>{if(e.altKey||e.ctrlKey||e.metaKey)return;if(chosen===null&&'1234'.includes(e.key)&&e.key.length===1){const btn=game.querySelectorAll('.choice')[Number(e.key)-1];btn?.click();}else if(chosen!==null&&e.key==='Enter'){game.querySelector('.actions button')?.click();}});
+    render();
+  </script>
+</body>
+</html>
